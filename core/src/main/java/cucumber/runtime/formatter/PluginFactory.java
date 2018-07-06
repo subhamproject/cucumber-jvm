@@ -38,17 +38,11 @@ public final class PluginFactory {
 
     private static final HashMap<String, Class<? extends Plugin>> PLUGIN_CLASSES = new HashMap<String, Class<? extends Plugin>>() {{
         put("null", NullFormatter.class);
-        put("junit", JUnitFormatter.class);
-        put("testng", TestNGFormatter.class);
-        put("html", HTMLFormatter.class);
-        put("pretty", PrettyFormatter.class);
         put("progress", ProgressFormatter.class);
-        put("json", JSONFormatter.class);
         put("usage", UsageFormatter.class);
         put("rerun", RerunFormatter.class);
         put("default_summary", DefaultSummaryPrinter.class);
         put("null_summary", NullSummaryPrinter.class);
-        put("timeline", TimelineFormatter.class);
     }};
     private static final Pattern PLUGIN_WITH_ARGUMENT_PATTERN = Pattern.compile("([^:]+):(.*)");
     private String defaultOutFormatter = null;

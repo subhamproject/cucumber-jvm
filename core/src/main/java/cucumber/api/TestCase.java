@@ -1,6 +1,6 @@
 package cucumber.api;
 
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.PickleTag;
 
 import java.util.List;
 

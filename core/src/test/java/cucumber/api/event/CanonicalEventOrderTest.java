@@ -1,7 +1,7 @@
 package cucumber.api.event;
 
 import cucumber.api.TestCase;
-import gherkin.pickles.PickleLocation;
+import io.cucumber.messages.Messages;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -33,8 +33,8 @@ public class CanonicalEventOrderTest {
     }
 
     private Event runStarted = new TestRunStarted(getTime());
-    private Event testRead = new TestSourceRead(getTime(), "uri", "source");
-    private Event suggested = new SnippetsSuggestedEvent(getTime(), "uri", Collections.<PickleLocation>emptyList(), Collections.<String>emptyList());
+    private Event testRead = new TestSourceRead(getTime(), "source");
+    private Event suggested = new SnippetsSuggestedEvent(getTime(), "uri", Collections.<Messages.Location>emptyList(), Collections.<String>emptyList());
     private Event feature1Case1Started = createTestCaseEvent("feature1", 1);
     private Event feature1Case2Started = createTestCaseEvent("feature1", 9);
     private Event feature1Case3Started = createTestCaseEvent("feature1", 11);

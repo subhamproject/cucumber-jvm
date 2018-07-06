@@ -6,6 +6,10 @@ import cucumber.api.Result;
 import cucumber.api.Scenario;
 import cucumber.api.event.ConcurrentEventListener;
 import cucumber.api.event.EventListener;
+import cucumber.api.formatter.Formatter;
+import io.cucumber.messages.Messages.GherkinDocument;
+import io.cucumber.messages.Messages.PickleStep;
+import io.cucumber.messages.Messages.PickleTag;
 import cucumber.runner.EventBus;
 import cucumber.runner.StepDurationTimeService;
 import cucumber.runner.TimeService;
@@ -14,16 +18,16 @@ import cucumber.runner.TimeServiceStub;
 import cucumber.runtime.formatter.PickleStepMatcher;
 import cucumber.runtime.io.ClasspathResourceLoader;
 import cucumber.runtime.model.CucumberFeature;
-import gherkin.AstBuilder;
-import gherkin.Parser;
-import gherkin.TokenMatcher;
-import gherkin.ast.GherkinDocument;
-import gherkin.pickles.PickleStep;
-import gherkin.pickles.PickleTag;
+import cucumber.runtime.model.FeatureLoader;
 import junit.framework.AssertionFailedError;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -244,11 +249,13 @@ public class TestHelper {
     }
 
     public static CucumberFeature feature(final String path, final String source) {
-        Parser<GherkinDocument> parser = new Parser<GherkinDocument>(new AstBuilder());
-        TokenMatcher matcher = new TokenMatcher();
 
-        GherkinDocument gherkinDocument = parser.parse(source, matcher);
-        return new CucumberFeature(gherkinDocument, path, source);
+        throw new RuntimeException("TODO");
+        //        Parser<GherkinDocument> parser = new Parser<GherkinDocument>(new AstBuilder());
+//        TokenMatcher matcher = new TokenMatcher();
+//
+//        GherkinDocument gherkinDocument = parser.parse(source, matcher);
+//        return new CucumberFeature(gherkinDocument, path, source);
     }
 
     public static Result result(String status) {
@@ -261,14 +268,14 @@ public class TestHelper {
 
     public static Result result(Result.Type status) {
         switch (status) {
-        case FAILED:
-            return result(status, mockAssertionFailedError());
-        case AMBIGUOUS:
-            return result(status, mockAmbiguousStepDefinitionException());
-        case PENDING:
-            return result(status, new PendingException());
-        default:
-            return result(status, null);
+            case FAILED:
+                return result(status, mockAssertionFailedError());
+            case AMBIGUOUS:
+                return result(status, mockAmbiguousStepDefinitionException());
+            case PENDING:
+                return result(status, new PendingException());
+            default:
+                return result(status, null);
         }
     }
 

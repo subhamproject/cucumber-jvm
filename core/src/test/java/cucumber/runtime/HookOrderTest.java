@@ -1,27 +1,24 @@
 package cucumber.runtime;
 
 import cucumber.runner.TimeServiceEventBus;
+import cucumber.api.Scenario;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.PickleStep;
+import io.cucumber.messages.Messages.PickleTag;
+import io.cucumber.messages.Messages.Location;
 import cucumber.runner.EventBus;
+import cucumber.runner.Runner;
 import cucumber.runner.TimeService;
 import io.cucumber.stepexpression.Argument;
-import cucumber.api.Scenario;
-import cucumber.runner.Runner;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
-import gherkin.pickles.PickleTag;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InOrder;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InOrder;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.anyListOf;
@@ -31,12 +28,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class HookOrderTest {
-    private final static String ENGLISH = "en";
-
     private Runner runner;
     private final GlueSupplier glueSupplier = new TestGlueHelper();
     private final Glue glue = glueSupplier.get();
-    private PickleEvent pickleEvent;
+    private Pickle pickleEvent;
 
     @Before
     public void buildMockWorld() {
@@ -48,14 +43,14 @@ public class HookOrderTest {
                 return singletonList(mock(Backend.class));
             }
         };
-        PickleStep step = mock(PickleStep.class);
+        PickleStep step = PickleHelper.step();
         StepDefinition stepDefinition = mock(StepDefinition.class);
         when(stepDefinition.matchedArguments(step)).thenReturn(Collections.<Argument>emptyList());
         when(stepDefinition.getPattern()).thenReturn("pattern1");
         runner = new ThreadLocalRunnerSupplier(runtimeOptions, bus, backendSupplier, glueSupplier).get();
         glue.addStepDefinition(stepDefinition);
 
-        pickleEvent = new PickleEvent("uri", new Pickle("name", ENGLISH, asList(step), Collections.<PickleTag>emptyList(), asList(mock(PickleLocation.class))));
+        pickleEvent = Pickle.newBuilder().addSteps(step).addLocations(Location.newBuilder()).build();
     }
 
     @Test

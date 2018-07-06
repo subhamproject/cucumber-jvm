@@ -5,11 +5,10 @@ import cucumber.api.Scenario;
 import cucumber.api.TestCase;
 import cucumber.api.event.EmbedEvent;
 import cucumber.api.event.WriteEvent;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.PickleTag;
+import io.cucumber.messages.Messages.Location;
 import cucumber.runner.EventBus;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleTag;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,17 +30,16 @@ public class ScenarioImpl implements Scenario {
     private final EventBus bus;
     private final TestCase testCase;
 
-    public ScenarioImpl(EventBus bus, TestCase testCase, PickleEvent pickleEvent) {
+    public ScenarioImpl(EventBus bus, TestCase testCase, Pickle pickle) {
         this.bus = bus;
         this.testCase = testCase;
-        Pickle pickle = pickleEvent.pickle;
-        this.tags = pickle.getTags();
-        this.uri = pickleEvent.uri;
+        this.tags = pickle.getTagsList();
+        this.uri = pickle.getUri();
         this.scenarioName = pickle.getName();
-        List<PickleLocation> locations = pickle.getLocations();
-        this.scenarioId = pickleEvent.uri + ":" + Integer.toString(locations.get(0).getLine());
+        List<Location> locations = pickle.getLocationsList();
+        this.scenarioId = pickle.getUri() + ":" + Integer.toString(locations.get(0).getLine());
         ArrayList<Integer> lines = new ArrayList<Integer>();
-        for (PickleLocation location : locations) {
+        for (Location location : locations) {
             lines.add(location.getLine());
         }
         this.scenarioLines = Collections.unmodifiableList(lines);

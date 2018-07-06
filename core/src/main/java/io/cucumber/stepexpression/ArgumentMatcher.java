@@ -1,6 +1,6 @@
 package io.cucumber.stepexpression;
 
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 
 import java.util.List;
 

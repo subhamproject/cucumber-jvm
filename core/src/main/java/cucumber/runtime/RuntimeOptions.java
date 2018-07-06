@@ -1,28 +1,20 @@
 package cucumber.runtime;
 
 import cucumber.api.SnippetType;
-import io.cucumber.datatable.DataTable;
 import cucumber.runtime.formatter.PluginFactory;
 import cucumber.runtime.model.PathWithLines;
 import cucumber.util.FixJava;
 import cucumber.util.Mapper;
-import gherkin.GherkinDialect;
-import gherkin.GherkinDialectProvider;
-import gherkin.IGherkinDialectProvider;
-import io.cucumber.datatable.DataTable;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-import static cucumber.util.FixJava.join;
-import static cucumber.util.FixJava.map;
 import static java.util.Arrays.asList;
 
 // IMPORTANT! Make sure USAGE.txt is always uptodate if this class changes.
@@ -142,9 +134,6 @@ public class RuntimeOptions {
             } else if (arg.equals("--version") || arg.equals("-v")) {
                 System.out.println(VERSION);
                 System.exit(0);
-            } else if (arg.equals("--i18n")) {
-                String nextArg = args.remove(0);
-                System.exit(printI18n(nextArg));
             } else if (arg.equals("--threads")) {
                 String threads = args.remove(0);
                 this.threads = Integer.parseInt(threads);
@@ -247,58 +236,6 @@ public class RuntimeOptions {
                 usageText = "Could not load usage text: " + e.toString();
             }
         }
-    }
-
-    private int printI18n(String language) {
-        IGherkinDialectProvider dialectProvider = new GherkinDialectProvider();
-        List<String> languages = dialectProvider.getLanguages();
-
-        if (language.equalsIgnoreCase("help")) {
-            for (String code : languages) {
-                System.out.println(code);
-            }
-            return 0;
-        }
-        if (languages.contains(language)) {
-            return printKeywordsFor(dialectProvider.getDialect(language, null));
-        }
-
-        System.err.println("Unrecognised ISO language code");
-        return 1;
-    }
-
-    private int printKeywordsFor(GherkinDialect dialect) {
-        StringBuilder builder = new StringBuilder();
-        List<List<String>> table = new ArrayList<List<String>>();
-        addKeywordRow(table, "feature", dialect.getFeatureKeywords());
-        addKeywordRow(table, "background", dialect.getBackgroundKeywords());
-        addKeywordRow(table, "scenario", dialect.getScenarioKeywords());
-        addKeywordRow(table, "scenario outline", dialect.getScenarioOutlineKeywords());
-        addKeywordRow(table, "examples", dialect.getExamplesKeywords());
-        addKeywordRow(table, "given", dialect.getGivenKeywords());
-        addKeywordRow(table, "when", dialect.getWhenKeywords());
-        addKeywordRow(table, "then", dialect.getThenKeywords());
-        addKeywordRow(table, "and", dialect.getAndKeywords());
-        addKeywordRow(table, "but", dialect.getButKeywords());
-        addCodeKeywordRow(table, "given", dialect.getGivenKeywords());
-        addCodeKeywordRow(table, "when", dialect.getWhenKeywords());
-        addCodeKeywordRow(table, "then", dialect.getThenKeywords());
-        addCodeKeywordRow(table, "and", dialect.getAndKeywords());
-        addCodeKeywordRow(table, "but", dialect.getButKeywords());
-        DataTable.create(table).print(builder);
-        System.out.println(builder.toString());
-        return 0;
-    }
-
-    private void addCodeKeywordRow(List<List<String>> table, String key, List<String> keywords) {
-        List<String> codeKeywordList = new ArrayList<String>(keywords);
-        codeKeywordList.remove("* ");
-        addKeywordRow(table, key + " (code)", map(codeKeywordList, CODE_KEYWORD_MAPPER));
-    }
-
-    private void addKeywordRow(List<List<String>> table, String key, List<String> keywords) {
-        List<String> cells = asList(key, join(map(keywords, QUOTE_MAPPER), ", "));
-        table.add(cells);
     }
 
     public List<String> getGlue() {

@@ -1,8 +1,8 @@
 package cucumber.runtime.filter;
 
-import gherkin.events.PickleEvent;
+import io.cucumber.messages.Messages.Pickle;
 
 interface PicklePredicate {
 
-    boolean apply(PickleEvent pickleEvent);
+    boolean apply(Pickle pickle);
 }

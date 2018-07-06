@@ -2,6 +2,7 @@ package cucumber.api.testng;
 
 import cucumber.api.event.TestRunFinished;
 import cucumber.api.event.TestRunStarted;
+import io.cucumber.messages.Messages.Pickle;
 import cucumber.runner.Runner;
 import cucumber.runner.TimeServiceEventBus;
 import cucumber.runner.EventBus;
@@ -9,22 +10,20 @@ import cucumber.runner.TimeService;
 import cucumber.runtime.BackendModuleBackendSupplier;
 import cucumber.runtime.ClassFinder;
 import cucumber.runtime.CucumberException;
-import cucumber.runtime.FeatureCompiler;
 import cucumber.runtime.FeaturePathFeatureSupplier;
-import cucumber.runtime.filter.Filters;
-import cucumber.runtime.formatter.Plugins;
-import cucumber.runtime.filter.RerunFilters;
-import cucumber.runtime.formatter.PluginFactory;
-import cucumber.runtime.model.FeatureLoader;
-import cucumber.runtime.ThreadLocalRunnerSupplier;
 import cucumber.runtime.RuntimeGlueSupplier;
 import cucumber.runtime.RuntimeOptions;
 import cucumber.runtime.RuntimeOptionsFactory;
+import cucumber.runtime.ThreadLocalRunnerSupplier;
+import cucumber.runtime.filter.Filters;
+import cucumber.runtime.filter.RerunFilters;
+import cucumber.runtime.formatter.PluginFactory;
+import cucumber.runtime.formatter.Plugins;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
 import cucumber.runtime.model.CucumberFeature;
-import gherkin.events.PickleEvent;
+import cucumber.runtime.model.FeatureLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +63,7 @@ public class TestNGCucumberRunner {
         featureSupplier = new FeaturePathFeatureSupplier(featureLoader, runtimeOptions);
     }
 
-    public void runScenario(PickleEvent pickle) throws Throwable {
+    public void runScenario(Pickle pickle) throws Throwable {
         //Possibly invoked in a multi-threaded context
         Runner runner = runnerSupplier.get();
         TestCaseResultListener testCaseResultListener = new TestCaseResultListener(runner.getBus(), runtimeOptions.isStrict());
@@ -87,12 +86,11 @@ public class TestNGCucumberRunner {
     public Object[][] provideScenarios() {
         try {
             List<Object[]> scenarios = new ArrayList<Object[]>();
-            FeatureCompiler compiler = new FeatureCompiler();
             List<CucumberFeature> features = getFeatures();
             for (CucumberFeature feature : features) {
-                List<PickleEvent> pickles = compiler.compileFeature(feature);
+                List<Pickle> pickles = feature.getPickles();
 
-                for (PickleEvent pickle : pickles) {
+                for (Pickle pickle : pickles) {
                     if (filters.matchesFilters(pickle)) {
                         scenarios.add(new Object[]{new PickleEventWrapperImpl(pickle),
                             new CucumberFeatureWrapperImpl(feature)});

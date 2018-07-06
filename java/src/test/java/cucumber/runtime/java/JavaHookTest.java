@@ -1,7 +1,6 @@
 package cucumber.runtime.java;
 
 import cucumber.api.Scenario;
-import io.cucumber.stepexpression.TypeRegistry;
 import cucumber.api.java.After;
 import cucumber.api.java.AfterStep;
 import cucumber.api.java.Before;
@@ -14,8 +13,8 @@ import cucumber.runtime.RuntimeGlue;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.PickleTag;
+import io.cucumber.stepexpression.TypeRegistry;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -131,7 +130,11 @@ public class JavaHookTest {
         backend.buildWorld();
         backend.addHook(BEFORE.getAnnotation(Before.class), BEFORE);
         HookDefinition before = glue.getBeforeHooks().get(0);
-        assertTrue(before.matches(asList(new PickleTag(mock(PickleLocation.class), "@bar"), new PickleTag(mock(PickleLocation.class), "@zap"))));
+        assertTrue(before.matches(asList(tag("@bar"), tag("@zap"))));
+    }
+
+    private PickleTag tag(String name) {
+        return PickleTag.newBuilder().setName(name).build();
     }
 
     @Test
@@ -140,7 +143,7 @@ public class JavaHookTest {
         backend.buildWorld();
         backend.addHook(BEFORE.getAnnotation(Before.class), BEFORE);
         HookDefinition before = glue.getBeforeHooks().get(0);
-        assertFalse(before.matches(asList(new PickleTag(mock(PickleLocation.class), "@bar"))));
+        assertFalse(before.matches(asList(tag("@bar"))));
     }
 
     @Test

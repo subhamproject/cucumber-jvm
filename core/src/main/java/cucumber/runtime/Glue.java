@@ -1,7 +1,7 @@
 package cucumber.runtime;
 
 import cucumber.api.StepDefinitionReporter;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 
 import java.util.List;
 

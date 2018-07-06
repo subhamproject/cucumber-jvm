@@ -5,27 +5,22 @@ import cucumber.runner.TimeServiceEventBus;
 import cucumber.runner.EventBus;
 import cucumber.runner.Runner;
 import cucumber.runner.TimeService;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.PickleTag;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 
 import java.util.Collection;
-import java.util.Collections;
 
-import static java.util.Arrays.asList;
+import static cucumber.runtime.PickleHelper.pickle;
+import static cucumber.runtime.PickleHelper.step;
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class HookTest {
-    private final static String ENGLISH = "en";
-
     /**
      * Test for <a href="https://github.com/cucumber/cucumber-jvm/issues/23">#23</a>.
      * TODO: ensure this is no longer needed with the alternate approach taken in Runtime
@@ -45,16 +40,15 @@ public class HookTest {
             }
         };
         EventBus bus = new TimeServiceEventBus(TimeService.SYSTEM);
-
         GlueSupplier glueSupplier = new TestGlueHelper();
         Glue glue = glueSupplier.get();
-        
+
         Runner runner = new ThreadLocalRunnerSupplier(runtimeOptions, bus, backendSupplier, glueSupplier).get();
         glue.addAfterHook(hook);
-        PickleStep step = mock(PickleStep.class);
-        PickleEvent pickleEvent = new PickleEvent("uri", new Pickle("name", ENGLISH, asList(step), Collections.<PickleTag>emptyList(), asList(mock(PickleLocation.class))));
 
-        runner.runPickle(pickleEvent);
+        Pickle pickle = pickle(step());
+
+        runner.runPickle(pickle);
 
         InOrder inOrder = inOrder(hook, backend);
         inOrder.verify(hook).execute(ArgumentMatchers.<Scenario>any());

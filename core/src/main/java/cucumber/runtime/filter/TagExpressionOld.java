@@ -1,6 +1,6 @@
 package cucumber.runtime.filter;
 
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.PickleTag;
 
 import java.util.ArrayList;
 import java.util.Collection;

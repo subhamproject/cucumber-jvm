@@ -16,7 +16,7 @@ import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
 import cucumber.runtime.model.CucumberFeature;
 import cucumber.runtime.model.FeatureLoader;
-import gherkin.events.PickleEvent;
+import io.cucumber.messages.Messages.Pickle;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 public class Runtime {
 
     private final ExitStatus exitStatus;
-
-    private final RuntimeOptions runtimeOptions;
 
     private final RunnerSupplier runnerSupplier;
     private final Filters filters;
@@ -51,7 +49,6 @@ public class Runtime {
                    final ExecutorService executor) {
 
         this.plugins = plugins;
-        this.runtimeOptions = runtimeOptions;
         this.filters = filters;
         this.bus = bus;
         this.runnerSupplier = runnerSupplier;
@@ -71,9 +68,8 @@ public class Runtime {
         final StepDefinitionReporter stepDefinitionReporter = plugins.stepDefinitionReporter();
         runnerSupplier.get().reportStepDefinitions(stepDefinitionReporter);
 
-        final FeatureCompiler compiler = new FeatureCompiler();
         for (CucumberFeature feature : features) {
-            for (final PickleEvent pickleEvent : compiler.compileFeature(feature)) {
+            for (final Pickle pickleEvent : feature.getPickles()) {
                 if (filters.matchesFilters(pickleEvent)) {
                     executor.execute(new Runnable() {
                         @Override
